@@ -1,5 +1,7 @@
 package navigation
 
+import conf.switches.Switches
+
 object NavLinks {
   /* NEWS */
   val science = NavLink("Science", "/science")
@@ -77,6 +79,9 @@ object NavLinks {
     )
   )
   val soccer = football.copy(title = "Soccer")
+
+  val worldCup2018 = NavLink("World Cup 2018", "/football/world-cup-2018")
+
   val cricket = NavLink("Cricket", "/sport/cricket")
   val cycling = NavLink("Cycling", "/sport/cycling")
   val rugbyUnion = NavLink("Rugby union", "/sport/rugby-union")
@@ -193,7 +198,7 @@ object NavLinks {
       ukNews,
       world,
       ukBusiness,
-      football,
+      worldCupElse(football),
       politics,
       ukEnvironment,
       education,
@@ -210,7 +215,7 @@ object NavLinks {
       world,
       auPolitics,
       auEnvironment,
-      football,
+      worldCupElse(football),
       indigenousAustralia,
       auImmigration,
       media,
@@ -223,7 +228,7 @@ object NavLinks {
       usNews,
       world,
       ukEnvironment,
-      soccer,
+      worldCupElse(soccer),
       usPolitics,
       usBusiness,
       tech,
@@ -238,7 +243,7 @@ object NavLinks {
       science,
       cities,
       globalDevelopment,
-      football,
+      worldCupElse(football),
       tech,
       ukBusiness,
       ukEnvironment,
@@ -287,7 +292,7 @@ object NavLinks {
   //Sport Pillar
   val ukSportPillar = NavLink("Sport", "/sport", longTitle = "Sport home", iconName = "home",
     List(
-      football,
+      worldCupElse(football),
       rugbyUnion,
       cricket,
       tennis,
@@ -302,7 +307,7 @@ object NavLinks {
   )
   val auSportPillar = ukSportPillar.copy(
     children = List(
-      football,
+      worldCupElse(football),
       AFL,
       NRL,
       aLeague,
@@ -313,7 +318,7 @@ object NavLinks {
   )
   val usSportPillar = ukSportPillar.copy(
     children = List(
-      soccer,
+      worldCupElse(soccer),
       NFL,
       tennis,
       MLB,
@@ -324,7 +329,7 @@ object NavLinks {
   )
   val intSportPillar = ukSportPillar.copy(
     children = List(
-      football,
+      worldCupElse(football),
       rugbyUnion,
       cricket,
       tennis,
@@ -599,4 +604,9 @@ object NavLinks {
     "fashion/beauty",
     "technology/motoring"
   )
+
+  private[this] def worldCupElse(fallback: NavLink) = {
+    if (Switches.WorldCup2018Nav.isSwitchedOn) worldCup2018
+    else fallback
+  }
 }

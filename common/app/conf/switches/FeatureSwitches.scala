@@ -24,6 +24,16 @@ trait FeatureSwitches {
     exposeClientSide = false
   )
 
+  val WorldCup2018Nav = Switch(
+    SwitchGroup.Feature,
+    "world-cup-2018-nav-takeover",
+    "Replaces football with world cup 2018 tag page link in main navigation. WARNING! requires a redeploy to be applied because nav links are not dynamic.",
+    owners = Seq(Owner.withGithub("nicl")),
+    safeState = Off,
+    sellByDate = new LocalDate(2018, 8, 1),
+    exposeClientSide = false
+  )
+
   val FacebookShareImageLogoOverlay = Switch(
     SwitchGroup.Feature,
     "facebook-share-image-logo-overlay",
