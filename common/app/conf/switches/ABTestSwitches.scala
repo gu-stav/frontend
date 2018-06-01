@@ -105,4 +105,14 @@ trait ABTestSwitches {
     sellByDate = new LocalDate(2018, 6, 5),
     exposeClientSide = true
   )
+
+  Switch(
+    ABTests,
+    "ab-audio-page-changes",
+    "Test different versions of the audio page",
+    owners = Seq(Owner.withGithub("ajwl")),
+    safeState = Off,
+    sellByDate = new LocalDate(2018, 7, 5),
+    exposeClientSide = true
+  )
 }
