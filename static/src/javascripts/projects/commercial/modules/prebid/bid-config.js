@@ -15,6 +15,8 @@ import type {
     PrebidSonobiParams,
     PrebidTrustXParams,
     PrebidXaxisParams,
+    PrebidAppNexusParams,
+    PrebidOpenXParams,
 } from 'commercial/modules/prebid/types';
 import {
     getBreakpointKey,
@@ -149,6 +151,39 @@ const getImprovePlacementId = (sizes: PrebidSize[]): number => {
     }
 };
 
+const getAppNexusPlacementId = (sizes: PrebidSize[]): string => {
+    switch (config.page.edition) {
+        case 'UK':
+            switch (getBreakpointKey()) {
+                case 'D':
+                    if (containsMpuOrDmpu(sizes)) {
+                        return '13366606';
+                    }
+                    if (containsLeaderboardOrBillboard(sizes)) {
+                        return '13366615';
+                    }
+                    return '';
+                case 'M':
+                    if (contains(sizes, [300, 250])) {
+                        return '13366904';
+                    }
+                    return '';
+                case 'T':
+                    if (contains(sizes, [300, 250])) {
+                        return '13366913';
+                    }
+                    if (contains(sizes, [728, 90])) {
+                        return '13366916';
+                    }
+                    return '';
+                default:
+                    return '';
+            }
+        default:
+            return '';
+    }
+};
+
 // Improve has to have single size as parameter if slot doesn't accept multiple sizes,
 // because it uses same placement ID for multiple slot sizes and has no other size information
 const getImproveSizeParam = (slotId: string): PrebidImproveSizeParam => {
@@ -202,6 +237,47 @@ const xaxisBidder: PrebidBidder = {
     labelAll: ['edn-UK', 'deal-FirstLook'],
 };
 
+// Dummy bidders for the whitehorse project (https://trello.com/c/KbeBLyYZ)
+const appnexusBidder: PrebidBidder = {
+    name: 'appnexus',
+    bidParams: (slotId: string, sizes: PrebidSize[]): PrebidAppNexusParams => ({
+        placementId: getAppNexusPlacementId(sizes),
+    }),
+};
+
+const openxBidder: PrebidBidder = {
+    name: 'openx',
+    bidParams: (): PrebidOpenXParams => {
+        switch (config.page.edition) {
+            case 'UK':
+                return {
+                    delDomain: 'guardian-d.openx.net',
+                    unit: '539997090',
+                };
+            case 'US':
+                return {
+                    delDomain: 'guardian-us-d.openx.net',
+                    unit: '539997087',
+                };
+            default:
+                // AU and rest
+                return {
+                    delDomain: 'guardian-aus-d.openx.net',
+                    unit: '539997046',
+                };
+        }
+    },
+};
+
+const dummyServerSideBidders: PrebidBidder[] = [];
+
+if (config.switches.prebidS2sozone) {
+    dummyServerSideBidders.push(appnexusBidder);
+    dummyServerSideBidders.push(openxBidder);
+}
+
+// End of dummy serverside bidders
+
 // There's an IX bidder for every size that the slot can take
 const indexExchangeBidders: (PrebidSize[]) => PrebidBidder[] = slotSizes => {
     if (config.switches.prebidIndexExchange) {
@@ -232,11 +308,9 @@ if (config.switches.prebidXaxis) {
 }
 
 const bidders: (PrebidSize[]) => PrebidBidder[] = slotSizes => {
-    const combinedBidders = otherBidders.slice();
-    Array.prototype.push.apply(
-        combinedBidders,
-        indexExchangeBidders(slotSizes)
-    );
+    let combinedBidders = otherBidders.slice();
+    combinedBidders = combinedBidders.concat(indexExchangeBidders(slotSizes));
+    combinedBidders = combinedBidders.concat(dummyServerSideBidders);
     return combinedBidders;
 };
 
