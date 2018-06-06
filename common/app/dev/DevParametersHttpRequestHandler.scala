@@ -52,6 +52,7 @@ class DevParametersHttpRequestHandler(
   )
 
   val commercialParams = Seq(
+    "a", // Prebid analytics
     "ad-unit", // allows overriding of the ad unit
     "adtest", // used to set ad-test cookie from admin domain
     "adrefresh", // force adrefresh to be off with adrefresh=false in the URL
